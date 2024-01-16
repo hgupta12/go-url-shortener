@@ -13,7 +13,7 @@ func NewBasicShortener(hashGenerator HashGenerator, storage Storage) *BasicShort
 }
 
 func (s *BasicShortener) Shorten(url string) string {
-	hash := s.hashGenerator.Generate(url)
+	hash := s.hashGenerator.Generate()
 	s.storage.Save(url, hash)
 	return hash
 }

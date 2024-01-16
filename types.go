@@ -9,7 +9,7 @@ type Response struct {
 }
 
 type HashGenerator interface {
-	Generate(url string) string
+	Generate() string
 }
 
 type Shortener interface {

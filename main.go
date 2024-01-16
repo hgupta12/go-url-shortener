@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	numberGenerator := NewNumberGenerator()
-	redisStorage := NewRedisStorage("localhost:6379", "", 0)
-	shortener := NewBasicShortener(numberGenerator, redisStorage)
+	generator := NewSnowflakeIDGenerator()
+	storage := NewRedisStorage("localhost:6379", "", 0)
+	shortener := NewBasicShortener(generator, storage)
 	apiServer := NewAPIServer(":8080", shortener)
 	err := apiServer.Run()
 	if err != nil {
