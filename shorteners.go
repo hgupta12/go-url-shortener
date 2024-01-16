@@ -5,10 +5,10 @@ type BasicShortener struct {
 	storage       Storage
 }
 
-func NewBasicShortener() *BasicShortener {
+func NewBasicShortener(hashGenerator HashGenerator, storage Storage) *BasicShortener {
 	return &BasicShortener{
-		hashGenerator: NewNumberGenerator(),
-		storage: NewMapStorage(),
+		hashGenerator: hashGenerator,
+		storage: storage,
 	}
 }
 
