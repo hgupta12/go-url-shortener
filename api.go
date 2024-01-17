@@ -59,7 +59,7 @@ func (s *APIServer) handleResolveShortURL(w http.ResponseWriter, r *http.Request
 		log.Fatal(err)
 	}
 
-	http.Redirect(w, r, url, http.StatusPermanentRedirect)
+	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
 func (s *APIServer) Run() error {

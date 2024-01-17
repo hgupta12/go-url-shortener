@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -30,6 +29,8 @@ const (
 	baseEpoch int64 = 1704067200000
 	maxSequence = int64(-1) ^ (int64(-1) << sequenceBits)
 	timeLeft int64 = 22
+	characterSet string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	base = uint64(len(characterSet))
 )
 type SnowflakeIDGenerator struct {
 	mutex sync.Mutex
@@ -55,7 +56,11 @@ func (g *SnowflakeIDGenerator) Generate() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	stringID := strconv.FormatUint(id, 36)
+	var stringID string
+	for id > 0 {
+		stringID = string(characterSet[id%base]) + stringID
+		id /= base
+	}
 
 	return stringID
 }
