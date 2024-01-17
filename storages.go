@@ -4,32 +4,31 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sync"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
 )
 
 type MapStorage struct {
-	store map[string]string
+	store sync.Map
 }
 
 func NewMapStorage() *MapStorage {
-	return &MapStorage{
-		store: make(map[string]string),
-	}
+	return &MapStorage{}
 }
 
 func (s *MapStorage) Save(url string, hash string) error {
-	s.store[hash] = url
+	s.store.Store(hash, url)
 	return nil
 }
 
 func (s *MapStorage) Load(hash string) (string, error) {
-	url, ok := s.store[hash]
+	url, ok := s.store.Load(hash)
 	if !ok {
 		return "", fmt.Errorf("URL not found")		
 	}
-	return url, nil
+	return fmt.Sprintf("%s", url), nil
 }
 
 type RedisStorage struct {
@@ -41,7 +40,8 @@ func NewRedisStorage(address string, password string, db int) *RedisStorage {
 	client := redis.NewClient(&redis.Options{
 		Addr: address,
 		Password: password,
-		DB: db,
+		DB: db,	
+		MinIdleConns: 10,
 	})
 	ctx := context.Background()
 	return &RedisStorage{
@@ -75,6 +75,9 @@ func NewPostgresStorage(host string, port int, user string, password string, dbn
 	if err != nil {
 		panic(err)
 	}
+
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
 	
 	if err := db.Ping(); err != nil {
 		panic(err)
